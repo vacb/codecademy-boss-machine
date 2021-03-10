@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 4001;
 app.use(cors());
 
 // Add middware for parsing request bodies here:
-app.use(bodyParser.json);
+app.use(bodyParser.json());
 
 // Mount your existing apiRouter below at the '/api' path.
 const apiRouter = require('./server/api');
