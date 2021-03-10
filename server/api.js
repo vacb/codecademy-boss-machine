@@ -9,8 +9,19 @@ const {
     createMeeting,
     deleteAllFromDatabase
   } = require('./db');
+  const checkMillionDollarIdea = require('./checkMillionDollarIdea');
 
 // MINIONS //
+
+apiRouter.param('minionId', (req, res, next, id) => {
+    const minion = getFromDatabaseById('minions', id);
+    if (minion) {
+      req.minion = minion;
+      next();
+    } else {
+      res.status(404).send();
+    }
+  });
 
 // GET /api/minions to get an array of all minions.
 apiRouter.get('/minions', (req, res, next) => {
@@ -43,13 +54,23 @@ apiRouter.delete('/minions/:minionId', (req, res, next) => {
 
 // IDEAS //
 
+apiRouter.param('ideaId', (req, res, next, id) => {
+    const idea = getFromDatabaseById('ideas', id);
+    if (idea) {
+      req.idea = idea;
+      next();
+    } else {
+      res.status(404).send();
+    }
+  });
+
 // GET /api/ideas to get an array of all ideas.
 apiRouter.get('/ideas', (req, res, next) => {
     res.send(getAllFromDatabase('ideas'));
 });
 
 // POST /api/ideas to create a new idea and save it to the database.
-apiRouter.post('/ideas', (req, res, next) => {
+apiRouter.post('/ideas', checkMillionDollarIdea, (req, res, next) => {
     const newIdea = addToDatabase('ideas', req.body);
     res.status(201).send(newIdea);    
 });
@@ -63,7 +84,7 @@ apiRouter.get('/ideas/:ideaId', (req, res, next) => {
 
 
 // PUT /api/ideas/:ideaId to update a single idea by i.
-apiRouter.put('/ideas/:ideaId', (req, res, next) => {
+apiRouter.put('/ideas/:ideaId', checkMillionDollarIdea, (req, res, next) => {
     const ideaToUpdate = updateInstanceInDatabase('ideas', req.body);    
     res.send(ideaToUpdate);
 });
